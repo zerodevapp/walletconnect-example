@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import { WalletConnectKernelService } from "@zerodev/walletconnect";
 import { KernelEIP1193Provider } from "@zerodev/wallet";
 import type { EntryPoint } from "permissionless/types";
@@ -11,7 +11,7 @@ export type WalletConnectParams = {
   metadata?: CoreTypes.Metadata;
 };
 
-function useWalletConnect(wcConfig: WalletConnectParams) {
+function useWalletConnect() {
   const [service, setService] = useState<WalletConnectKernelService | null>(
     null
   );
@@ -23,17 +23,25 @@ function useWalletConnect(wcConfig: WalletConnectParams) {
   const [sessionRequest, setSessionRequest] =
     useState<Web3WalletTypes.SessionRequest | null>(null);
   const { connector, isConnected } = useAccount();
+  const provider = useMemo(() => connector?.getProvider(), [connector]);
 
   useEffect(() => {
     const initialize = async () => {
-      const provider = connector?.getProvider();
+      const p = await provider
       const kernelService = new WalletConnectKernelService();
       try {
         await kernelService.init({
-          walletConnectProjectId: wcConfig.projectId || "",
-          walletConnectMetadata: wcConfig.metadata || {},
+          walletConnectProjectId: "17cfb36ea993dea579f9227e1f7e67a2",
+          walletConnectMetadata: {
+            name: "ZeroDev Wallet",
+            url: "https://zerodev.app",
+            description: "Smart contract wallet for Ethereum",
+            icons: [
+              "https://pbs.twimg.com/profile_images/1582474288719880195/DavMgC0t_400x400.jpg",
+            ],
+          },
           kernelProvider:
-            provider as unknown as KernelEIP1193Provider<EntryPoint>,
+            p as unknown as KernelEIP1193Provider<EntryPoint>,
         });
         setService(kernelService);
 
@@ -57,10 +65,10 @@ function useWalletConnect(wcConfig: WalletConnectParams) {
         setError(e as Error);
       }
     };
-    if (isConnected && connector) {
+    if (isConnected && provider) {
       initialize();
     }
-  }, [connector, isConnected, wcConfig]);
+  }, [isConnected, provider]);
 
   const connect = useCallback(
     async (uri: string) => {

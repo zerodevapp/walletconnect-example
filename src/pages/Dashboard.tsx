@@ -21,20 +21,10 @@ function Dashboard() {
     sessionRequest,
     approveSessionRequest,
     rejectSessionRequest,
-  } = useWalletConnect({
-    projectId: "bb1805e49e8bd78a9c75aefed3649d68",
-    metadata: {
-      name: "ZeroDev Wallet",
-      url: "https://zerodev.app",
-      description: "Smart contract wallet for Ethereum",
-      icons: [
-        "https://pbs.twimg.com/profile_images/1582474288719880195/DavMgC0t_400x400.jpg",
-      ],
-    },
-  });
+  } = useWalletConnect();
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4 flex flex-col items-center justify-center h-screen">
       <h1 className="text-2xl font-bold text-center mb-4">
         ZeroDev WalletConnect Demo
       </h1>
@@ -103,13 +93,13 @@ function Dashboard() {
       <h2 className="text-xl font-semibold mb-2">Sessions</h2>
       {sessions.length > 0 ? (
         sessions.map((session) => (
-          <div className="flex flex-row gap-4 mb-2" key={session.topic}>
+          <div className="flex flex-row items-center gap-4 mb-2" key={session.topic}>
             <p>{session.peer.metadata.name}</p>
             <button
               className="ml-auto bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               onClick={() => disconnect(session)}
             >
-              Disconnect
+              Disconnect Session
             </button>
           </div>
         ))
